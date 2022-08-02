@@ -1,11 +1,7 @@
 package com.poshyweb.vendas.controller;
 
-import com.poshyweb.venda.dominio.ClienteEntity;
-import com.poshyweb.venda.dto.ClienteDTO;
-import com.poshyweb.venda.service.ClineteService;
 import com.poshyweb.vendas.dominio.entity.ClienteEntity;
-import com.poshyweb.vendas.dto.ClienteDTO;
-import com.poshyweb.vendas.service.ClineteService;
+import com.poshyweb.vendas.service.ClienteService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,38 +9,40 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Optional;
 
 @RestController
-@RequestMapping ("/v1/cliente")
+@RequestMapping("/v1/cliente")
 public class ClienteController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClienteController.class);
 
     @Autowired
-    private ClineteService clineteService;
+    private ClienteService clienteService;
 
-    @GetMapping("listar")
-    public ResponseEntity<List<ClienteEntity>> getCliente(){
+    @GetMapping(value = "/listar/id/{id}")
+    public ResponseEntity<Optional<ClienteEntity>> getClienteId(@PathVariable("id") Integer id ){
         try{
-            LOGGER.info("Inicio da busca aqui");
-            List<ClienteEntity> clienteEntity = clineteService.getClienteEntity();
-            return ResponseEntity.status(HttpStatus.OK).body(clienteEntity);
+            Optional<ClienteEntity> clienteEntity = clienteService.buscarPorId(id);
+            if (clienteEntity.isPresent()){
+                LOGGER.info("Dados Retornado com sucesso");
+                return ResponseEntity.status(HttpStatus.OK).body(clienteEntity);
+            }
         }catch (Exception e){
-            System.out.println("Nem um dado encontrado");
+            LOGGER.info("Não ha dados na base" + e.getMessage());
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
     }
 
-    @PostMapping(value = "inserir")
-    public ResponseEntity<ClienteEntity> create(@RequestBody ClienteDTO dto) {
-        if (dto != null){
-            LOGGER.info("Cadastrado com sucesso!");
-            ClienteEntity entity = clineteService.salvarCleinte(dto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(entity);
+    @PostMapping(value = "/cadastrar")
+    public ResponseEntity<ClienteEntity> cadastrar(@RequestBody ClienteEntity cliente){
+        LOGGER.info("Cadastrado com sucesso !");
+        if (cliente.getNome() != null){
+            return ResponseEntity.status(HttpStatus.CREATED).body(clienteService.salvar(cliente));
         }else{
-            System.out.println("Erro ao cadastrar......");
+            LOGGER.info("Erro! OBS: Cadastro com nome Null !");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
-        return null;
     }
+
 
 }
