@@ -60,13 +60,16 @@ public class ClienteController {
     }
 
     @PutMapping(value = "/update/id/{id}")
-    public ResponseEntity update(@PathVariable ("id") Integer id, @RequestBody ClienteEntity cliente) {
+    public ResponseEntity<ClienteEntity> update(@PathVariable ("id") Integer id, @RequestBody ClienteEntity cliente) {
         return clienteService.buscarPorId(id)
                 .map(clienteExistente -> {
                     cliente.setId(clienteExistente.getId());
                     clienteService.salvar(cliente);
-                    return ResponseEntity.noContent().build();
-                }).orElseGet(() -> ResponseEntity.noContent().build());
+                    LOGGER.info("Salvo Com sucesso!");
+                    return ResponseEntity.status(HttpStatus.OK).body(cliente);
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
+
     }
 
 
