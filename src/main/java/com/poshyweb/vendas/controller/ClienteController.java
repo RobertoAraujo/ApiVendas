@@ -6,10 +6,13 @@ import com.poshyweb.vendas.service.ClienteService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,7 +43,7 @@ public class ClienteController {
         try {
             Optional<ClienteEntity> clienteEntity = clienteService.buscarPorId(id);
             if (clienteEntity.isPresent()) {
-                LOGGER.info("Dados Retornado com sucesso");
+                LOGGER.info("Dados Retornado com sucesso : "+ clienteEntity);
                 return ResponseEntity.status(HttpStatus.OK).body(clienteEntity);
             }
         } catch (Exception e) {
@@ -50,9 +53,9 @@ public class ClienteController {
     }
 
     @PostMapping(value = "/cadastrar")
-    public ResponseEntity<ClienteEntity> cadastrar(@RequestBody ClienteDTO dto) {
-        LOGGER.info("Cadastrado com sucesso !");
+    public ResponseEntity<ClienteEntity> cadastrar(@Valid @RequestBody ClienteDTO dto ) {
         if (dto.getNome() != null) {
+            LOGGER.info("Cadastrado com sucesso ! ", dto);
             return ResponseEntity.status(HttpStatus.CREATED).body(clienteService.salvarDTO(dto));
         } else {
             LOGGER.info("Erro! OBS: Cadastro com nome Null !");
@@ -61,25 +64,36 @@ public class ClienteController {
     }
 
     @PutMapping(value = "/update/id/{id}")
-    public ResponseEntity<ClienteEntity> update(@PathVariable ("id") Integer id, @RequestBody ClienteEntity cliente) {
-        return clienteService.buscarPorId(id).map(clienteExistente -> {cliente.setId(clienteExistente.getId());
-                    clienteService.salvar(cliente);
-                    LOGGER.info("Salvo com sucesso!");
-                    return ResponseEntity.status(HttpStatus.OK).body(cliente);
-                }).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<ClienteEntity> update(@PathVariable("id") Integer id, @RequestBody ClienteEntity cliente) {
+        return clienteService.buscarPorId(id).map(clienteExistente -> {
+            cliente.setId(clienteExistente.getId());
+            clienteService.salvar(cliente);
+            LOGGER.info("Salvo com sucesso!");
+            return ResponseEntity.status(HttpStatus.OK).body(cliente);
+        }).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping(value = "/deletar/id/{id}")
-    public ResponseEntity<ClienteEntity> deletar( @PathVariable ("id") Integer id){
+    public ResponseEntity<ClienteEntity> deletar(@PathVariable("id") Integer id) {
         Optional<ClienteEntity> clienteEntity = clienteService.buscarPorId(id);
-        if (clienteEntity.isPresent()){
+        if (clienteEntity.isPresent()) {
             clienteService.remover(clienteEntity.get().getId());
             LOGGER.info("Cleinte removido com sucesso!");
-            return ResponseEntity.status(HttpStatus.OK).body(clienteEntity.get());
-        }else {
-            LOGGER.info("Cleinte não encontrado ou inexistente!");
+            return ResponseEntity.noContent().build();
+        } else {
+            LOGGER.info("Cliente não encontrado ou inexistente!");
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping(value = "/filtro")
+    public ResponseEntity find(ClienteEntity filtro) {
+            ExampleMatcher matcher = ExampleMatcher.matching().withIgnoreCase()
+                    .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
+            Example example = Example.of(filtro, matcher);
+            LOGGER.info("Buscando Lista de Clientes");
+            List<ClienteEntity> list = clienteService.getTodos();
+            return ResponseEntity.status(HttpStatus.OK).body(list);
     }
 
 

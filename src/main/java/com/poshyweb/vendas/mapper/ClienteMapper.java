@@ -11,6 +11,7 @@ public class ClienteMapper {
 
     private static ClienteEntity mergeEntity(ClienteEntity entity, ClienteDTO dto) {
         entity.setNome(dto.getNome());
+        entity.setCpf(dto.getCpf());
         return entity;
     }
 
@@ -20,6 +21,7 @@ public class ClienteMapper {
 
     private static ClienteEntity mergeDTO(ClienteDTO dto, ClienteEntity entity) {
         dto.setNome(entity.getNome());
+        dto.setCpf(entity.getCpf());
         return entity;
     }
 }
