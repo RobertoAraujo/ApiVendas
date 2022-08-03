@@ -13,4 +13,13 @@ public class ClienteMapper {
         entity.setNome(dto.getNome());
         return entity;
     }
+
+    public static ClienteEntity toDTO(ClienteEntity entity){
+        return mergeDTO(new ClienteDTO(), entity);
+    }
+
+    private static ClienteEntity mergeDTO(ClienteDTO dto, ClienteEntity entity) {
+        dto.setNome(entity.getNome());
+        return entity;
+    }
 }

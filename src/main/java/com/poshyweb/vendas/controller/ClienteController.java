@@ -1,6 +1,7 @@
 package com.poshyweb.vendas.controller;
 
 import com.poshyweb.vendas.dominio.entity.ClienteEntity;
+import com.poshyweb.vendas.dto.ClienteDTO;
 import com.poshyweb.vendas.service.ClienteService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,10 +50,10 @@ public class ClienteController {
     }
 
     @PostMapping(value = "/cadastrar")
-    public ResponseEntity<ClienteEntity> cadastrar(@RequestBody ClienteEntity cliente) {
+    public ResponseEntity<ClienteEntity> cadastrar(@RequestBody ClienteDTO dto) {
         LOGGER.info("Cadastrado com sucesso !");
-        if (cliente.getNome() != null) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(clienteService.salvar(cliente));
+        if (dto.getNome() != null) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(clienteService.salvarDTO(dto));
         } else {
             LOGGER.info("Erro! OBS: Cadastro com nome Null !");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
@@ -61,15 +62,24 @@ public class ClienteController {
 
     @PutMapping(value = "/update/id/{id}")
     public ResponseEntity<ClienteEntity> update(@PathVariable ("id") Integer id, @RequestBody ClienteEntity cliente) {
-        return clienteService.buscarPorId(id)
-                .map(clienteExistente -> {
-                    cliente.setId(clienteExistente.getId());
+        return clienteService.buscarPorId(id).map(clienteExistente -> {cliente.setId(clienteExistente.getId());
                     clienteService.salvar(cliente);
-                    LOGGER.info("Salvo Com sucesso!");
+                    LOGGER.info("Salvo com sucesso!");
                     return ResponseEntity.status(HttpStatus.OK).body(cliente);
-                })
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                }).orElseGet(() -> ResponseEntity.notFound().build());
+    }
 
+    @DeleteMapping(value = "/deletar/id/{id}")
+    public ResponseEntity<ClienteEntity> deletar( @PathVariable ("id") Integer id){
+        Optional<ClienteEntity> clienteEntity = clienteService.buscarPorId(id);
+        if (clienteEntity.isPresent()){
+            clienteService.remover(clienteEntity.get().getId());
+            LOGGER.info("Cleinte removido com sucesso!");
+            return ResponseEntity.status(HttpStatus.OK).body(clienteEntity.get());
+        }else {
+            LOGGER.info("Cleinte não encontrado ou inexistente!");
+            return ResponseEntity.notFound().build();
+        }
     }
 
 
