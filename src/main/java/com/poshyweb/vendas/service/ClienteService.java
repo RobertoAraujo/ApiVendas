@@ -5,6 +5,7 @@ import com.poshyweb.vendas.dominio.rapository.ClienteRepository;
 import com.poshyweb.vendas.dto.ClienteDTO;
 import com.poshyweb.vendas.mapper.ClienteMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

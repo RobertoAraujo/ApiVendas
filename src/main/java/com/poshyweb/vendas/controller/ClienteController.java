@@ -1,6 +1,7 @@
 package com.poshyweb.vendas.controller;
 
 import com.poshyweb.vendas.dominio.entity.ClienteEntity;
+import com.poshyweb.vendas.dominio.rapository.ClienteRepository;
 import com.poshyweb.vendas.dto.ClienteDTO;
 import com.poshyweb.vendas.service.ClienteService;
 import org.slf4j.Logger;
@@ -23,6 +24,9 @@ public class ClienteController {
 
     @Autowired
     private ClienteService clienteService;
+
+    @Autowired
+    private ClienteRepository repository;
 
     @GetMapping(value = "/listar/todos")
     public ResponseEntity<List<ClienteEntity>> getTodosClientes() {
@@ -86,15 +90,17 @@ public class ClienteController {
         }
     }
 
-    @GetMapping(value = "/filtro")
-    public ResponseEntity find(ClienteEntity filtro) {
-            ExampleMatcher matcher = ExampleMatcher.matching().withIgnoreCase()
-                    .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
-            Example example = Example.of(filtro, matcher);
-            LOGGER.info("Buscando Lista de Clientes");
-            List<ClienteEntity> list = clienteService.getTodos();
-            return ResponseEntity.status(HttpStatus.OK).body(list);
-    }
+    @GetMapping("/api/clientes")
+    public ResponseEntity find( ClienteEntity filtro ){
+        ExampleMatcher matcher = ExampleMatcher
+                .matching()
+                .withIgnoreCase()
+                .withStringMatcher(
+                        ExampleMatcher.StringMatcher.CONTAINING );
 
+        Example<ClienteEntity> example = Example.of(filtro, matcher);
+        List<ClienteEntity> lista = repository.findAll(example);
+        return ResponseEntity.status(HttpStatus.OK).body(lista);
+    }
 
 }
