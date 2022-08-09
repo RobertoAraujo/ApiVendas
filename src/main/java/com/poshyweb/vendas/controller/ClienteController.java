@@ -90,7 +90,7 @@ public class ClienteController {
         }
     }
 
-    @GetMapping("/api/clientes")
+    @GetMapping("/buscar")
     public ResponseEntity find( ClienteEntity filtro ){
         ExampleMatcher matcher = ExampleMatcher
                 .matching()
