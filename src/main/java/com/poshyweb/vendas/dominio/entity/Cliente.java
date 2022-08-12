@@ -7,7 +7,7 @@ import java.util.Set;
 
 @Entity
 @Table( name = "cliente" )
-public class ClienteEntity {
+public class Cliente {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -20,25 +20,25 @@ public class ClienteEntity {
     @Column(name = "cpf",length = 11)
     private  String cpf;
     @OneToMany( mappedBy = "cliente" , fetch = FetchType.LAZY )
-    private Set<PedidoEntity> pedidos;
-    public ClienteEntity() {
+    private Set<Pedido> pedidos;
+    public Cliente() {
     }
 
-    public Set<PedidoEntity> getPedidos() {
+    public Set<Pedido> getPedidos() {
         return pedidos;
     }
 
-    public void setPedidos(Set<PedidoEntity> pedidos) {
+    public void setPedidos(Set<Pedido> pedidos) {
         this.pedidos = pedidos;
     }
 
-    public ClienteEntity(Integer id, String nome, String cpf) {
+    public Cliente(Integer id, String nome, String cpf) {
         this.id = id;
         this.nome = nome;
         this.cpf = cpf;
     }
 
-    public ClienteEntity(String nome) {
+    public Cliente(String nome) {
         this.nome = nome;
     }
 
@@ -70,7 +70,7 @@ public class ClienteEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ClienteEntity that = (ClienteEntity) o;
+        Cliente that = (Cliente) o;
         return Objects.equals(id, that.id) && Objects.equals(nome, that.nome) && Objects.equals(cpf, that.cpf) && Objects.equals(pedidos, that.pedidos);
     }
 

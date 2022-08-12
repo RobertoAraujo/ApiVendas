@@ -1,7 +1,6 @@
 package com.poshyweb.vendas.controller;
 
-import com.poshyweb.vendas.dominio.entity.ClienteEntity;
-import com.poshyweb.vendas.dominio.rapository.ClienteRepository;
+import com.poshyweb.vendas.dominio.rapository.Cliente;
 import com.poshyweb.vendas.dto.ClienteDTO;
 import com.poshyweb.vendas.service.ClienteService;
 import org.slf4j.Logger;
@@ -26,12 +25,12 @@ public class ClienteController {
     private ClienteService clienteService;
 
     @Autowired
-    private ClienteRepository repository;
+    private Cliente repository;
 
     @GetMapping(value = "/listar/todos")
-    public ResponseEntity<List<ClienteEntity>> getTodosClientes() {
+    public ResponseEntity<List<com.poshyweb.vendas.dominio.entity.Cliente>> getTodosClientes() {
         try {
-            List<ClienteEntity> clienteEntity = clienteService.getTodos();
+            List<com.poshyweb.vendas.dominio.entity.Cliente> clienteEntity = clienteService.getTodos();
             if (!clienteEntity.isEmpty()) {
                 LOGGER.info("Dados Retornado com sucesso");
                 return ResponseEntity.status(HttpStatus.OK).body(clienteEntity);
@@ -43,9 +42,9 @@ public class ClienteController {
     }
 
     @GetMapping(value = "/listar/id/{id}")
-    public ResponseEntity<Optional<ClienteEntity>> getClienteId(@PathVariable("id") Integer id) {
+    public ResponseEntity<Optional<com.poshyweb.vendas.dominio.entity.Cliente>> getClienteId(@PathVariable("id") Integer id) {
         try {
-            Optional<ClienteEntity> clienteEntity = clienteService.buscarPorId(id);
+            Optional<com.poshyweb.vendas.dominio.entity.Cliente> clienteEntity = clienteService.buscarPorId(id);
             if (clienteEntity.isPresent()) {
                 LOGGER.info("Dados Retornado com sucesso : "+ clienteEntity);
                 return ResponseEntity.status(HttpStatus.OK).body(clienteEntity);
@@ -57,7 +56,7 @@ public class ClienteController {
     }
 
     @PostMapping(value = "/cadastrar")
-    public ResponseEntity<ClienteEntity> cadastrar(@Valid @RequestBody ClienteDTO dto ) {
+    public ResponseEntity<com.poshyweb.vendas.dominio.entity.Cliente> cadastrar(@Valid @RequestBody ClienteDTO dto ) {
         if (dto.getNome() != null) {
             LOGGER.info("Cadastrado com sucesso ! ", dto);
             return ResponseEntity.status(HttpStatus.CREATED).body(clienteService.salvarDTO(dto));
@@ -68,7 +67,7 @@ public class ClienteController {
     }
 
     @PutMapping(value = "/update/id/{id}")
-    public ResponseEntity<ClienteEntity> update(@PathVariable("id") Integer id, @RequestBody ClienteEntity cliente) {
+    public ResponseEntity<com.poshyweb.vendas.dominio.entity.Cliente> update(@PathVariable("id") Integer id, @RequestBody com.poshyweb.vendas.dominio.entity.Cliente cliente) {
         return clienteService.buscarPorId(id).map(clienteExistente -> {
             cliente.setId(clienteExistente.getId());
             clienteService.salvar(cliente);
@@ -78,8 +77,8 @@ public class ClienteController {
     }
 
     @DeleteMapping(value = "/deletar/id/{id}")
-    public ResponseEntity<ClienteEntity> deletar(@PathVariable("id") Integer id) {
-        Optional<ClienteEntity> clienteEntity = clienteService.buscarPorId(id);
+    public ResponseEntity<com.poshyweb.vendas.dominio.entity.Cliente> deletar(@PathVariable("id") Integer id) {
+        Optional<com.poshyweb.vendas.dominio.entity.Cliente> clienteEntity = clienteService.buscarPorId(id);
         if (clienteEntity.isPresent()) {
             clienteService.remover(clienteEntity.get().getId());
             LOGGER.info("Cleinte removido com sucesso!");
@@ -91,15 +90,15 @@ public class ClienteController {
     }
 
     @GetMapping("/buscar")
-    public ResponseEntity find( ClienteEntity filtro ){
+    public ResponseEntity find( com.poshyweb.vendas.dominio.entity.Cliente filtro ){
         ExampleMatcher matcher = ExampleMatcher
                 .matching()
                 .withIgnoreCase()
                 .withStringMatcher(
                         ExampleMatcher.StringMatcher.CONTAINING );
 
-        Example<ClienteEntity> example = Example.of(filtro, matcher);
-        List<ClienteEntity> lista = repository.findAll(example);
+        Example<com.poshyweb.vendas.dominio.entity.Cliente> example = Example.of(filtro, matcher);
+        List<com.poshyweb.vendas.dominio.entity.Cliente> lista = repository.findAll(example);
         return ResponseEntity.status(HttpStatus.OK).body(lista);
     }
 

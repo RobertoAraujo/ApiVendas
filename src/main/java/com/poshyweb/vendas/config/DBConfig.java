@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 @Configuration
-@Profile("homolog")
+@Profile("dsv")
 public class DBConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(DBConfig.class);
 

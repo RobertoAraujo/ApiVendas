@@ -8,7 +8,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "pedido")
-public class PedidoEntity {
+public class Pedido {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
@@ -16,7 +16,7 @@ public class PedidoEntity {
 
     @ManyToOne
     @JoinColumn(name = "cliente_id")
-    private ClienteEntity cliente;
+    private Cliente cliente;
 
     @Column(name = "data_pedido")
     private LocalDate dataPedido;
@@ -25,13 +25,13 @@ public class PedidoEntity {
     private BigDecimal total;
 
     @OneToMany(mappedBy = "pedido")
-    private List<ItemPedidoEntity> itens;
+    private List<ItemPedido> itens;
 
-    public List<ItemPedidoEntity> getItens() {
+    public List<ItemPedido> getItens() {
         return itens;
     }
 
-    public void setItens(List<ItemPedidoEntity> itens) {
+    public void setItens(List<ItemPedido> itens) {
         this.itens = itens;
     }
 
@@ -43,11 +43,11 @@ public class PedidoEntity {
         this.id = id;
     }
 
-    public ClienteEntity getCliente() {
+    public Cliente getCliente() {
         return cliente;
     }
 
-    public void setCliente(ClienteEntity cliente) {
+    public void setCliente(Cliente cliente) {
         this.cliente = cliente;
     }
 
@@ -71,7 +71,7 @@ public class PedidoEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PedidoEntity that = (PedidoEntity) o;
+        Pedido that = (Pedido) o;
         return Objects.equals(id, that.id) && Objects.equals(cliente, that.cliente) && Objects.equals(dataPedido, that.dataPedido) && Objects.equals(total, that.total) && Objects.equals(itens, that.itens);
     }
 

@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "produto")
-public class ProdutoEntity {
+public class Produto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
